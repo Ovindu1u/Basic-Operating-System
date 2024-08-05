@@ -1,0 +1,8 @@
+#!/bin/bash
+make
+RUNNER="qemu-system-i386"
+OPTIONS="-fda"
+IMAGE="build/boot"
+
+$RUNNER $OPTIONS "$IMAGE"
+
