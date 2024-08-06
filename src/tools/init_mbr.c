@@ -1,4 +1,4 @@
-//Tool to copy the 448 bytes of boot code, jump to main, and add the boot signature
+// Tool to copy the 448 bytes of boot code, jump to main, and add the boot signature
 
 #include <stdio.h>
 #include <stdlib.h>

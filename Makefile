@@ -1,16 +1,52 @@
 ASM=nasm
+CC=gcc
 
 BUILD=build
 SRC=src
 
-all: clean $(BUILD)/boot
+all: floppy
 
-$(BUILD)/boot:
-	$(ASM) -o $(BUILD)/boot $(SRC)/bootloader/main.asm
+tools: clean_tools initmbr
+
+floppy: clean bootloader initmbr $(BUILD)/floppy.img
+
+$(BUILD)/floppy.img:
+	dd if=/dev/zero of=$(BUILD)/floppy.img bs=512 count=2880
+	mkfs.fat -F12 -n "BASIC-OS" $(BUILD)/floppy.img
+	./$(BUILD)/tools/init-mbr $(BUILD)/floppy.img $(BUILD)/bootloader/mbr.img
+
+bootloader: $(BUILD)/bootloader/mbr.img
+
+$(BUILD)/bootloader/mbr.img:
+	$(ASM) -o $(BUILD)/bootloader/mbr.img $(SRC)/bootloader/mbr.asm
 
 
-clean:
+initmbr: $(BUILD)/tools/init-mbr
+
+$(BUILD)/tools/init-mbr:
+	$(CC) -o $(BUILD)/tools/init-mbr $(SRC)/tools/init_mbr.c
+
+
+clean: clean_build clean_tools clean_boot
+
+
+clean_tools:
+	mkdir -p $(BUILD)/tools
+	rm -rf $(BUILD)/tools/*
+
+
+clean_boot:
+	mkdir -p $(BUILD)/bootloader
+	rm -rf $(BUILD)/bootloader/*
+
+
+clean_build:
 	mkdir -p $(BUILD)
 	rm -rf $(BUILD)/*
+
+
+clear:
+	rm -rf $(BUILD)
+
 
 

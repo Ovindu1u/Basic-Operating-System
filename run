@@ -2,7 +2,7 @@
 make
 RUNNER="qemu-system-i386"
 OPTIONS="-fda"
-IMAGE="build/boot"
+IMAGE="build/floppy.img"
 
 $RUNNER $OPTIONS "$IMAGE"
 
