@@ -15,10 +15,8 @@ $(BUILD)/floppy.img:
 	mkfs.fat -F12 -n "BASIC-OS" $(BUILD)/floppy.img
 	./$(BUILD)/tools/init-mbr $(BUILD)/floppy.img $(BUILD)/bootloader/mbr.img
 
-bootloader: $(BUILD)/bootloader/mbr.img
-
-$(BUILD)/bootloader/mbr.img:
-	$(ASM) -o $(BUILD)/bootloader/mbr.img $(SRC)/bootloader/mbr.asm
+bootloader:
+	$(MAKE) -f $(SRC)/bootloader/Makefile
 
 
 initmbr: $(BUILD)/tools/init-mbr

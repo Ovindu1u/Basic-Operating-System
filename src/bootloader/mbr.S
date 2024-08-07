@@ -2,14 +2,26 @@
 ; Purpose is to load the second stage of the bootloader
 ; Minimal functionality, load files from a FAT filesystem and print basic strings
 
+%include "boot_record.s"
+
 bits 16                         ; the CPU starts in 16 bit mode
 org 0x7C00                      ; the address that the BIOS loads the MBR
 
+; BIOS PARAMETER BLOCK      
 jmp short main                  ; jump to execution
-times 62- ($ - $$) db 0        ; pad MBR and EBR with zeros 
+nop                             ; nop
 
+boot_parameter_block: resb bpb_size
+
+
+; EXTENDED BOOT RECORD
+extended_boot_record: resb ebr_size
+
+
+; BOOT CODE
 string: db "Hello World!", 0x0D, 0x0A, 0      ; string, followed by CRLF and null terminator
 bootloader: db "/boot/bootloader", 0          ; null terminated second stage file path
+
 
 ; prints string to tty
 ; ds:si   -   pointer to null terminated string
@@ -64,8 +76,3 @@ main:
     cli
     hlt
 
-
-
-
-times 510- ($ - $$) db 0        ; pad with zeros 
-dw 0xAA55                       ; boot signature
