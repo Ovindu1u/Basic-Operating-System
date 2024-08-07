@@ -35,13 +35,26 @@ int main(int argc, char **argv)
     uint8_t *bootsector = malloc(512);
     fread(bootsector, 512, 1, dest);
 
+    // get code size
+    fseek(code, 0, SEEK_END);
+    int size = ftell(code);
+    fseek(code, 0, SEEK_SET);
+
+    // warn if code is larger than 448 + boot record (510)
+    if (size > 510)
+        printf("Warning: boot code is too large, excess code might be cut off");
+
     // read jump code to buffer
     fread(bootsector, 3, 1, code);
 
     // read bootcode to buffer
     fseek(code, 62, SEEK_SET);
-    fread(bootsector + 62, 448, 1, code);
+    fread(bootsector + 62, size - 62, 1, code);
 
+    // pad the rest with zeros
+    if (size < 510) 
+        memset(bootsector + size, 0, 510 - size);
+    
     // add boot signature
     memcpy(bootsector + 510, &SIGNATURE, 2);
 
